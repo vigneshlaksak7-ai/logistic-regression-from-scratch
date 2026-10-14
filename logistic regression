@@ -1,0 +1,47 @@
+
+
+import numpy as np
+import pandas as pd
+
+# 1. Dataset: hours studied and result (0 = Fail, 1 = Pass)
+df = pd.DataFrame({
+    "StudyHours": [1, 2, 3, 4, 5, 6],
+    "Pass":       [0, 0, 0, 1, 1, 1],
+})
+X = df["StudyHours"].values
+y = df["Pass"].values
+
+# 2. Start with a blank model and set the learning settings
+weight, bias = 0.0, 0.0
+learning_rate = 0.1
+epochs = 1000
+
+
+# 3. Sigmoid: squeezes any score into a probability between 0 and 1
+def sigmoid(z):
+    return 1 / (1 + np.exp(-z))
+
+
+# 4. Training loop: score -> probability -> error -> gradient -> update
+for _ in range(epochs):
+    probability = sigmoid(weight * X + bias)
+    error = probability - y
+    weight -= learning_rate * np.mean(error * X)
+    bias -= learning_rate * np.mean(error)
+
+print(f"Learned Weight: {weight:.4f}")
+print(f"Learned Bias:   {bias:.4f}")
+
+
+# 5. Prediction: probability of passing + final decision (threshold 0.5)
+def predict(hours):
+    probability = sigmoid(weight * hours + bias)
+    return probability, int(probability >= 0.5)
+
+
+# 6. Test with a new student
+hours = 3.4
+probability, prediction = predict(hours)
+print(f"\nStudy Hours: {hours}")
+print(f"Pass Probability: {probability:.2%}")
+print("Result:", "PASS" if prediction == 1 else "FAIL")
